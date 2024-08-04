@@ -50,6 +50,7 @@ list(APPEND MICROPY_SOURCE_LIB
 list(APPEND MICROPY_SOURCE_DRIVERS
     ${MICROPY_DIR}/drivers/bus/softspi.c
     ${MICROPY_DIR}/drivers/dht/dht.c
+    ${MICROPY_DIR}/drivers/led/led.c
 )
 
 list(APPEND MICROPY_SOURCE_PORT
@@ -152,6 +153,7 @@ idf_component_register(
         ${MICROPY_PORT_DIR}
         ${MICROPY_BOARD_DIR}
         ${CMAKE_BINARY_DIR}
+        ${MICROPY_DIR}/drivers/
     LDFRAGMENTS
         linker.lf
     REQUIRES
