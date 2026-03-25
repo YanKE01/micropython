@@ -170,6 +170,7 @@ list(APPEND IDF_COMPONENTS
     driver
     esp_adc
     esp_app_format
+    esp_driver_jpeg
     esp_mm
     esp_common
     esp_driver_touch_sens

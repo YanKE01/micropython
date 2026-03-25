@@ -48,6 +48,10 @@
 #include "usb_serial_jtag.h"
 #include "uart.h"
 
+#if MICROPY_OPENMV
+#include "omv_protocol.h"
+#endif
+
 #if MICROPY_PY_STRING_TX_GIL_THRESHOLD < 0
 #error "MICROPY_PY_STRING_TX_GIL_THRESHOLD must be positive"
 #endif
@@ -111,7 +115,13 @@ uintptr_t mp_hal_stdio_poll(uintptr_t poll_flags) {
     usb_serial_jtag_poll_rx();
     #endif
     #if MICROPY_HW_USB_CDC
+    #if MICROPY_OPENMV
+    if (!omv_protocol_is_active()) {
+        ret |= mp_usbd_cdc_poll_interfaces(poll_flags);
+    }
+    #else
     ret |= mp_usbd_cdc_poll_interfaces(poll_flags);
+    #endif
     #endif
     #if MICROPY_PY_OS_DUPTERM
     ret |= mp_os_dupterm_poll(poll_flags);
@@ -132,7 +142,13 @@ int mp_hal_stdin_rx_chr(void) {
         usb_serial_jtag_poll_rx();
         #endif
         #if MICROPY_HW_USB_CDC
+        #if MICROPY_OPENMV
+        if (!omv_protocol_is_active()) {
+            mp_usbd_cdc_poll_interfaces(0);
+        }
+        #else
         mp_usbd_cdc_poll_interfaces(0);
+        #endif
         #endif
         int c = ringbuf_get(&stdin_ringbuf);
         if (c != -1) {
