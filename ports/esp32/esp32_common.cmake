@@ -107,10 +107,14 @@ if(MICROPY_PY_TINYUSB)
         ${MICROPY_BOARD_DIR})
 endif()
 
+if(NOT DEFINED MICROPY_SOURCE_PORT_MAIN)
+    set(MICROPY_SOURCE_PORT_MAIN main.c)
+endif()
+
 list(APPEND MICROPY_SOURCE_PORT
     panichandler.c
     adc.c
-    main.c
+    ${MICROPY_SOURCE_PORT_MAIN}
     ppp_set_auth.c
     uart.c
     usb.c

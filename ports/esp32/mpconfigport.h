@@ -286,6 +286,26 @@
 #if MICROPY_HW_USB_CDC && MICROPY_HW_ESP_USB_SERIAL_JTAG && (SOC_USB_OTG_PERIPH_NUM <= 1)
 #error "Invalid build config: Can't enable both native USB and USB Serial/JTAG peripheral"
 #endif
+
+#ifdef MICROPY_OPENMV
+#define MICROPY_BOARD_BEFORE_PYTHON_EXEC(input_kind, exec_flags) \
+    do {                                                         \
+        extern void stdio_channel_pyexec_hook(bool);             \
+        stdio_channel_pyexec_hook(true);                         \
+    } while (0)
+
+#define MICROPY_BOARD_AFTER_PYTHON_EXEC(input_kind, exec_flags, nlr, ret) \
+    do {                                                                  \
+        extern void stdio_channel_pyexec_hook(bool);                      \
+        stdio_channel_pyexec_hook(false);                                 \
+    } while (0)
+
+#define MICROPY_ENABLE_VM_ABORT             (1)
+#define MICROPY_BANNER_NAME_AND_VERSION     "OpenMV " OPENMV_GIT_TAG "; MicroPython " MICROPY_GIT_TAG
+#define MICROPY_WRAP_TUD_CDC_RX_CB(name)    __mp_ ## name
+#define MICROPY_WRAP_TUD_CDC_LINE_STATE_CB(name) __mp_ ## name
+#define MICROPY_WRAP_TUD_EVENT_HOOK_CB(name) __mp_ ## name
+#endif
 // type definitions for the specific machine
 
 #define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)((mp_uint_t)(p)))

@@ -9,6 +9,18 @@
 #define MICROPY_HW_MCU_NAME "ESP32P4"
 #endif
 
+#ifdef MICROPY_OPENMV
+#undef MICROPY_HW_BOARD_NAME
+#define MICROPY_HW_BOARD_NAME               "OpenMV ESP32P4"
+#define MICROPY_HW_USB_VID                  (0x37C5)
+#define MICROPY_HW_USB_PID                  (0x1204)
+#define MICROPY_HW_USB_PID_CDC              (MICROPY_HW_USB_PID)
+#define MICROPY_HW_USB_PID_MSC              (MICROPY_HW_USB_PID)
+#define MICROPY_HW_USB_PID_CDC_MSC          (MICROPY_HW_USB_PID)
+#define MICROPY_HW_USB_MANUFACTURER_STRING  "OpenMV"
+#define MICROPY_HW_USB_PRODUCT_FS_STRING    "OpenMV ESP32P4"
+#endif
+
 #define MICROPY_PY_ESPNOW                (0)
 
 #define MICROPY_HW_ENABLE_SDCARD            (1)
