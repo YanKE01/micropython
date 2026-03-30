@@ -63,6 +63,14 @@
 #define CFG_TUSB_RHPORT0_MODE   (OPT_MODE_DEVICE)
 #endif
 
+#ifndef CFG_TUSB_OS
+#define CFG_TUSB_OS             OPT_OS_FREERTOS
+#endif
+
+#ifndef CFG_TUSB_OS_INC_PATH
+#define CFG_TUSB_OS_INC_PATH    freertos/
+#endif
+
 #if MICROPY_HW_USB_CDC
 #define CFG_TUD_CDC             (1)
 #else

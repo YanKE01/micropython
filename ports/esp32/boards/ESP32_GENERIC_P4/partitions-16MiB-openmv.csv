@@ -1,0 +1,12 @@
+# OpenMV ESP32P4 16MiB flash partition table.
+# Keep a single large factory app partition and let MicroPython auto-register
+# the remaining flash as the "vfs" FAT filesystem at boot.
+#
+# 16MiB flash end: 0x1000000
+# factory end:     0x710000
+# auto-vfs size:   0x8F0000 (~8.9MiB)
+#
+# Name,   Type, SubType, Offset,  Size, Flags
+nvs,      data, nvs,     0x9000,  0x6000,
+phy_init, data, phy,     0xf000,  0x1000,
+factory,  app,  factory, 0x10000, 0x700000,

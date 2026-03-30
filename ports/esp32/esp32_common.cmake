@@ -169,6 +169,9 @@ list(APPEND IDF_COMPONENTS
     bt
     driver
     esp_adc
+    esp_driver_ppa
+    esp_driver_jpeg
+    esp_driver_gpio
     esp_app_format
     esp_mm
     esp_common
