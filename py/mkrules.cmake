@@ -280,7 +280,7 @@ if(MICROPY_FROZEN_MANIFEST)
         endif()
         add_custom_command(
             OUTPUT ${MICROPY_MPYCROSS_DEPENDENCY}
-            COMMAND ${MICROPY_MAKE_EXECUTABLE} -C ${MICROPY_DIR}/mpy-cross USER_C_MODULES=
+            COMMAND ${MICROPY_MAKE_EXECUTABLE} -C ${MICROPY_DIR}/mpy-cross USER_C_MODULES= FROZEN_MANIFEST=
         )
     endif()
 
