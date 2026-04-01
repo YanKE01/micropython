@@ -187,6 +187,16 @@ dependencies:
       registry_url: https://components.espressif.com/
       type: service
     version: 1.1.0
+  espressif/quirc:
+    component_hash: 3be250a06364f0d71a7903b66ac93084d2ce3998c2e75a168b9f1f0621dd6218
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=4.3.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.2.0
   espressif/tinyusb:
     component_hash: ee1c962cff61eb975d508258d509974d58031cc27ff0d6c4117a67a613a49594
     dependencies:
@@ -245,9 +255,10 @@ direct_dependencies:
 - espressif/esp_wifi_remote
 - espressif/iqmath
 - espressif/mdns
+- espressif/quirc
 - espressif/tinyusb
 - idf
 - yanke01/zbar
-manifest_hash: 5f5cad7bf9b96e010429d4a42e221dfb9d4c76e1ed9afcfb4a3183e2748df246
+manifest_hash: de4601834d65b1a7fc5f31f67adb63dfcd5f4a332f89e802f3cfd9d32d6a1878
 target: esp32p4
 version: 2.0.0

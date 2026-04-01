@@ -172,6 +172,7 @@ list(APPEND IDF_COMPONENTS
     esp_driver_ppa
     esp_driver_jpeg
     esp_driver_gpio
+    esp_driver_ledc
     esp_app_format
     esp_mm
     esp_common
