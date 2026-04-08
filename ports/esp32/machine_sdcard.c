@@ -39,6 +39,9 @@
 #include "driver/sdspi_host.h"
 #include "sdmmc_cmd.h"
 #include "esp_log.h"
+#if MICROPY_OPENMV
+#include "omv_sdcard.h"
+#endif
 
 #define DEBUG 0
 #if DEBUG
@@ -307,6 +310,9 @@ static mp_obj_t machine_sdcard_make_new(const mp_obj_type_t *type, size_t n_args
     else {
         sdmmc_host_t _temp_host = SDMMC_HOST_DEFAULT();
         _temp_host.max_freq_khz = freq / 1000;
+        #if MICROPY_OPENMV
+        check_esp_err(omv_esp32_sdcard_preinit_host(&_temp_host, slot_num));
+        #endif
         self->host = _temp_host;
     }
     #endif
@@ -431,6 +437,9 @@ static mp_obj_t sd_deinit(mp_obj_t self_in) {
             // SD card used a (dedicated) SPI bus, so free that SPI bus.
             spi_bus_free(self->host.slot);
         }
+        #if MICROPY_OPENMV
+        omv_esp32_sdcard_deinit_host(&self->host, self->host.slot);
+        #endif
         self->flags &= ~SDCARD_CARD_FLAGS_HOST_INIT_DONE;
     }
 
