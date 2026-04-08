@@ -9,6 +9,15 @@
 #define MICROPY_HW_MCU_NAME "ESP32P4"
 #endif
 
+#define MICROPY_WRAP_TUD_CDC_RX_CB(name) __mp_##name
+#define MICROPY_WRAP_TUD_EVENT_HOOK_CB(name) __mp_##name
+
+#define MICROPY_HW_USB_VID 0x37C5
+#define MICROPY_HW_USB_PID 0x1206
+#define MICROPY_HW_USB_MANUFACTURER_STRING "OpenMV"
+#define MICROPY_HW_USB_PRODUCT_FS_STRING "OpenMV Virtual Comm Port in HS Mode"
+#define MICROPY_HW_USB_CDC_INTERFACE_STRING "OpenMV CDC"
+
 #define MICROPY_PY_ESPNOW                (0)
 
 #define MICROPY_HW_ENABLE_SDCARD            (1)

@@ -31,6 +31,16 @@
 
 #if MICROPY_HW_ENABLE_USBDEV
 
+#if defined(ESP_PLATFORM)
+#ifndef CFG_TUSB_OS
+#define CFG_TUSB_OS OPT_OS_FREERTOS
+#endif
+
+#ifndef CFG_TUSB_OS_INC_PATH
+#define CFG_TUSB_OS_INC_PATH freertos/
+#endif
+#endif
+
 #ifndef MICROPY_HW_ENABLE_USB_RUNTIME_DEVICE
 #define MICROPY_HW_ENABLE_USB_RUNTIME_DEVICE 0
 #endif

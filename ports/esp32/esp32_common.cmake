@@ -146,6 +146,10 @@ list(APPEND MICROPY_SOURCE_PORT
     modespnow.c
 )
 list(TRANSFORM MICROPY_SOURCE_PORT PREPEND ${MICROPY_PORT_DIR}/)
+if(DEFINED OMV_ESP32_PORT_MAIN)
+    list(REMOVE_ITEM MICROPY_SOURCE_PORT ${MICROPY_PORT_DIR}/main.c)
+    list(APPEND MICROPY_SOURCE_PORT ${OMV_ESP32_PORT_MAIN})
+endif()
 list(APPEND MICROPY_SOURCE_PORT ${CMAKE_BINARY_DIR}/pins.c)
 
 list(APPEND MICROPY_SOURCE_QSTR
@@ -300,6 +304,12 @@ target_link_options(${MICROPY_TARGET} PUBLIC
   -Wl,--undefined=esp_panic_handler
   -Wl,--wrap=esp_panic_handler
 )
+if(DEFINED OMV_ESP32_PORT_MAIN)
+    target_link_options(${MICROPY_TARGET} PUBLIC
+      -Wl,--wrap=mp_hal_stdio_poll
+      -Wl,--wrap=mp_hal_stdout_tx_strn
+    )
+endif()
 
 # Collect all of the include directories and compile definitions for the IDF components,
 # including those added by the IDF Component Manager via idf_components.yaml.
