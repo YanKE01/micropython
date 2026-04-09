@@ -17,6 +17,11 @@
 #define MICROPY_HW_USB_MANUFACTURER_STRING "OpenMV"
 #define MICROPY_HW_USB_PRODUCT_FS_STRING "OpenMV Virtual Comm Port in HS Mode"
 #define MICROPY_HW_USB_CDC_INTERFACE_STRING "OpenMV CDC"
+#define MICROPY_HW_USB_MSC                 (1)
+#define MICROPY_HW_USB_MSC_INTERFACE_STRING "OpenMV Flash"
+#define MICROPY_HW_USB_MSC_INQUIRY_VENDOR_STRING "OpenMV  "
+#define MICROPY_HW_USB_MSC_INQUIRY_PRODUCT_STRING "ESP32P4 Flash   "
+#define MICROPY_HW_USB_MSC_INQUIRY_REVISION_STRING "1.00"
 
 #define MICROPY_PY_ESPNOW                (0)
 
@@ -31,9 +36,9 @@
 
 #define MICROPY_PY_MACHINE_I2S          (1)
 
-// Disable Wi-Fi and Bluetooth by default, these are re-enabled in the WIFI variants
+// Disable Bluetooth by default.
 #ifndef MICROPY_PY_NETWORK_WLAN
-#define MICROPY_PY_NETWORK_WLAN         (0)
+#define MICROPY_PY_NETWORK_WLAN         (1)
 #endif
 #ifndef MICROPY_PY_BLUETOOTH
 #define MICROPY_PY_BLUETOOTH            (0)
