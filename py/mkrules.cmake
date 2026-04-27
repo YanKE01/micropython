@@ -122,19 +122,29 @@ add_custom_target(
 # If any of the dependencies in this rule change then the C-preprocessor step must be run.
 # It only needs to be passed the list of MICROPY_SOURCE_QSTR files that have changed since
 # it was last run, but it looks like it's not possible to specify that with cmake.
+#
+# The combined include flags + source list easily exceeds cmd.exe's 8KB
+# single-line limit on Windows. Spill the makeqstrdefs.py "pp" sub-command's
+# arguments to a response file (one token per line) and pass it via @file;
+# makeqstrdefs.py expands @file tokens before parsing.
+file(GENERATE
+    OUTPUT ${MICROPY_GENHDR_DIR}/qstr.i.last.rsp
+    CONTENT "pp\n${CMAKE_C_COMPILER}\n-E\noutput\n${MICROPY_GENHDR_DIR}/qstr.i.last\ncflags\n$<JOIN:${MICROPY_CPP_FLAGS},\n>\n-DNO_QSTR\ncxxflags\n$<JOIN:${MICROPY_CPP_FLAGS},\n>\n-DNO_QSTR\nsources\n$<JOIN:${MICROPY_SOURCE_QSTR},\n>\n"
+)
+
 add_custom_command(
     OUTPUT ${MICROPY_QSTRDEFS_LAST}
-    COMMAND ${Python3_EXECUTABLE} ${MICROPY_PY_DIR}/makeqstrdefs.py pp ${CMAKE_C_COMPILER} -E output ${MICROPY_GENHDR_DIR}/qstr.i.last cflags ${MICROPY_CPP_FLAGS} -DNO_QSTR cxxflags ${MICROPY_CPP_FLAGS} -DNO_QSTR sources ${MICROPY_SOURCE_QSTR}
+    COMMAND ${Python3_EXECUTABLE} ${MICROPY_PY_DIR}/makeqstrdefs.py @${MICROPY_GENHDR_DIR}/qstr.i.last.rsp
     DEPENDS ${MICROPY_MPVERSION}
         ${MICROPY_SOURCE_QSTR}
+        ${MICROPY_GENHDR_DIR}/qstr.i.last.rsp
     VERBATIM
-    COMMAND_EXPAND_LISTS
 )
 
 add_custom_command(
     OUTPUT ${MICROPY_QSTRDEFS_SPLIT}
     COMMAND ${Python3_EXECUTABLE} ${MICROPY_PY_DIR}/makeqstrdefs.py split qstr ${MICROPY_GENHDR_DIR}/qstr.i.last ${MICROPY_GENHDR_DIR}/qstr _
-    COMMAND touch ${MICROPY_QSTRDEFS_SPLIT}
+    COMMAND ${CMAKE_COMMAND} -E touch ${MICROPY_QSTRDEFS_SPLIT}
     DEPENDS ${MICROPY_QSTRDEFS_LAST}
     VERBATIM
     COMMAND_EXPAND_LISTS
@@ -149,14 +159,24 @@ add_custom_command(
     COMMAND_EXPAND_LISTS
 )
 
+# Replace the original `cat | sed | gcc -E - | sed > out` shell pipeline with
+# a Python sub-command that does the cat / wrap / preprocess / unwrap stages
+# itself. Reasons: (a) Windows cmd has no cat/sed/pipes; (b) the preprocessor
+# invocation needs ${MICROPY_CPP_FLAGS} which already pushes past the 32K
+# CreateProcess limit, so the args go through GCC's @file response file.
+file(GENERATE
+    OUTPUT ${MICROPY_GENHDR_DIR}/qstrdefs.preprocessed.rsp
+    CONTENT "qstr_preprocess\noutput\n${MICROPY_QSTRDEFS_PREPROCESSED}\npp\n${CMAKE_C_COMPILER}\n-E\nflags\n$<JOIN:${MICROPY_CPP_FLAGS},\n>\nsources\n${MICROPY_QSTRDEFS_PY}\n${MICROPY_QSTRDEFS_PORT}\n${MICROPY_QSTRDEFS_COLLECTED}\n"
+)
+
 add_custom_command(
     OUTPUT ${MICROPY_QSTRDEFS_PREPROCESSED}
-    COMMAND cat ${MICROPY_QSTRDEFS_PY} ${MICROPY_QSTRDEFS_PORT} ${MICROPY_QSTRDEFS_COLLECTED} | sed "s/^Q(.*)/\"&\"/" | ${CMAKE_C_COMPILER} -E ${MICROPY_CPP_FLAGS} - | sed "s/^\\\"\\(Q(.*)\\)\\\"/\\1/" > ${MICROPY_QSTRDEFS_PREPROCESSED}
+    COMMAND ${Python3_EXECUTABLE} ${MICROPY_PY_DIR}/makeqstrdefs.py @${MICROPY_GENHDR_DIR}/qstrdefs.preprocessed.rsp
     DEPENDS ${MICROPY_QSTRDEFS_PY}
         ${MICROPY_QSTRDEFS_PORT}
         ${MICROPY_QSTRDEFS_COLLECTED}
+        ${MICROPY_GENHDR_DIR}/qstrdefs.preprocessed.rsp
     VERBATIM
-    COMMAND_EXPAND_LISTS
 )
 
 add_custom_command(
@@ -172,7 +192,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT ${MICROPY_MODULEDEFS_SPLIT}
     COMMAND ${Python3_EXECUTABLE} ${MICROPY_PY_DIR}/makeqstrdefs.py split module ${MICROPY_GENHDR_DIR}/qstr.i.last ${MICROPY_GENHDR_DIR}/module _
-    COMMAND touch ${MICROPY_MODULEDEFS_SPLIT}
+    COMMAND ${CMAKE_COMMAND} -E touch ${MICROPY_MODULEDEFS_SPLIT}
     DEPENDS ${MICROPY_QSTRDEFS_LAST}
     VERBATIM
     COMMAND_EXPAND_LISTS
@@ -198,7 +218,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT ${MICROPY_ROOT_POINTERS_SPLIT}
     COMMAND ${Python3_EXECUTABLE} ${MICROPY_PY_DIR}/makeqstrdefs.py split root_pointer ${MICROPY_GENHDR_DIR}/qstr.i.last ${MICROPY_GENHDR_DIR}/root_pointer _
-    COMMAND touch ${MICROPY_ROOT_POINTERS_SPLIT}
+    COMMAND ${CMAKE_COMMAND} -E touch ${MICROPY_ROOT_POINTERS_SPLIT}
     DEPENDS ${MICROPY_QSTRDEFS_LAST}
     VERBATIM
     COMMAND_EXPAND_LISTS
@@ -224,7 +244,7 @@ add_custom_command(
 add_custom_command(
     OUTPUT ${MICROPY_COMPRESSED_SPLIT}
     COMMAND ${Python3_EXECUTABLE} ${MICROPY_PY_DIR}/makeqstrdefs.py split compress ${MICROPY_QSTRDEFS_LAST} ${MICROPY_GENHDR_DIR}/compress _
-    COMMAND touch ${MICROPY_COMPRESSED_SPLIT}
+    COMMAND ${CMAKE_COMMAND} -E touch ${MICROPY_COMPRESSED_SPLIT}
     DEPENDS ${MICROPY_QSTRDEFS_LAST}
     VERBATIM
     COMMAND_EXPAND_LISTS
