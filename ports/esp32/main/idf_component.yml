@@ -28,5 +28,9 @@ dependencies:
     version: "1.1.4"
     rules:
       - if: "target == esp32p4"
+  espressif/esp-dl:
+    version: "3.3.2"
+    rules:
+      - if: "target == esp32p4"
   idf:
     version: ">=5.2.0"
