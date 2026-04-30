@@ -107,10 +107,13 @@ if(MICROPY_PY_TINYUSB)
         ${MICROPY_BOARD_DIR})
 endif()
 
+if(NOT MICROPY_ESP32_MAIN_SOURCE)
+    set(MICROPY_ESP32_MAIN_SOURCE ${MICROPY_PORT_DIR}/main.c)
+endif()
+
 list(APPEND MICROPY_SOURCE_PORT
     panichandler.c
     adc.c
-    main.c
     ppp_set_auth.c
     uart.c
     usb.c
@@ -147,6 +150,7 @@ list(APPEND MICROPY_SOURCE_PORT
     modespnow.c
 )
 list(TRANSFORM MICROPY_SOURCE_PORT PREPEND ${MICROPY_PORT_DIR}/)
+list(PREPEND MICROPY_SOURCE_PORT ${MICROPY_ESP32_MAIN_SOURCE})
 list(APPEND MICROPY_SOURCE_PORT ${CMAKE_BINARY_DIR}/pins.c)
 
 list(APPEND MICROPY_SOURCE_QSTR
@@ -166,6 +170,11 @@ list(APPEND IDF_COMPONENTS
     bt
     driver
     esp_adc
+    esp_driver_ppa
+    esp_driver_jpeg
+    esp_driver_gpio
+    esp_driver_ledc
+    esp_lcd
     esp_app_format
     esp_mm
     esp_common
