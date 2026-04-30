@@ -22,7 +22,7 @@
 #define MICROPY_PY_MACHINE_I2S           (1)
 
 #ifndef MICROPY_PY_NETWORK_WLAN
-#define MICROPY_PY_NETWORK_WLAN          (0)
+#define MICROPY_PY_NETWORK_WLAN          (1)
 #endif
 
 #ifndef MICROPY_PY_BLUETOOTH
