@@ -1,6 +1,30 @@
 import vfs
 from flashbdev import bdev
 
+DEFAULT_MAIN_PY = """\
+import sensor
+import time
+
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.QVGA)
+sensor.skip_frames(time=1000)
+
+while True:
+    img = sensor.snapshot()
+    img.flush()
+    time.sleep_ms(20)
+"""
+
+DEFAULT_README_TXT = """\
+ESP-VISION
+
+This flash filesystem was initialized by ESP-VISION.
+
+main.py contains a default camera preview loop. Edit or replace it with your
+own MicroPython script.
+"""
+
 
 def check_bootsec():
     buf = bytearray(bdev.ioctl(5, 0))  # 5 is SEC_SIZE
@@ -54,4 +78,10 @@ def setup():
 #webrepl.start()
 """
         )
+    with open("main.py", "w") as f:
+        f.write(DEFAULT_MAIN_PY)
+    with open("README.txt", "w") as f:
+        f.write(DEFAULT_README_TXT)
+    with open(".esp_vision_disk", "w"):
+        pass
     return fs
